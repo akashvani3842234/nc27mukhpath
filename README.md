@@ -2,7 +2,7 @@
 
 A simple, mobile-friendly flashcard web app for memorizing questions and answers. Everything runs in your browser — there are no accounts, no servers, and your flashcard data never leaves your device.
 
-**Open the app:** if this site is hosted on GitHub Pages, the app lives at `nc27_mukhpath.html` (e.g. `https://<username>.github.io/<repo>/nc27_mukhpath.html`). If the file has been renamed to `index.html`, just visit the site's root URL.
+**Open the app:** if this site is hosted on GitHub Pages, the app lives at `index.html` (e.g. `https://<username>.github.io/<repo>/index.html`).
 
 > **Tip (iPhone/Android):** open the app in your browser, then use **Add to Home Screen**. It gets its own icon and opens like an app.
 
