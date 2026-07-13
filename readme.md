@@ -1,8 +1,8 @@
-# NC27 Mukhpath — Flashcards (Preloaded Edition)
+# NC27 Mukhpath — Flashcards App
 
-A mobile-friendly flashcard web app for NC27 Mukhpath preparation, **preloaded with all 150 questions** — open the link and start studying immediately. Everything runs in your browser: no accounts, no sign-in, and your progress is saved privately on your own device.
+A mobile-friendly flashcard web app for NC27 Mukhpath preparation, **preloaded with all 50 questions in English, Gujarati, and transliterated Gujarati**.  Open the link and start studying immediately. Everything runs in your browser: no accounts, no sign-in, and your progress is saved privately on your own device.
 
-**Open the app:** visit the site's `nc27index.html` page (e.g. `https://<username>.github.io/<repo>/nc27index.html`).
+**Open the app:**  `https://akashvani3842234.github.io/nc27mukhpath/`
 
 > **Tip (iPhone/Android):** open the app in your browser, then use **Add to Home Screen**. It gets its own icon and opens like an app.
 
@@ -18,14 +18,14 @@ The same content in three languages, organized as three folders:
 | **Gujarati** | Q & A · Vachanamrut · Swamini Vāto · Satsang Diksha · Prasangs |
 | **Transliteration** | Q & A · Vachanamrut · Swamini Vāto · Satsang Diksha · Prasangs |
 
-Each deck contains 10 questions — 150 in total. Pick the folder for the language you study in (or use them side by side).
+Each folder contains the same 50 questions, but in its respective language. Pick the folder for the language you study in.
 
 ## How your progress works
 
 - The questions are built into the page, so **everyone who opens the link starts with the full set**.
 - As soon as you start marking cards, your progress (and any edits you make) is saved **in your browser on your device**. Nobody else can see it, and other visitors' marks never affect yours.
-- Progress does **not** sync between devices or browsers on its own — see [Backing up](#backing-up-and-moving-between-devices) below to move it.
-- Clearing your browser's website data erases your progress **and restores the original 150 questions** — a factory reset, in effect. Export a backup first if you want to keep your marks.
+- Progress does **not** sync between devices or browsers on its own, but you can export your progress and import it to another device.  See [Backing up](#backing-up-and-moving-between-devices) below to move it.
+- Clearing your browser's website data erases your progress **and restores the original 50 questions** — a factory reset, in effect. Export a backup first if you want to keep your marks.
 
 ## Studying
 
@@ -50,18 +50,16 @@ Know a card but not 100% confident? Tap **"Not 100% confident — needs practice
 
 ## Making it your own
 
-The preloaded content is a starting point, not a limit — you can edit any question (tap it in the deck list), add your own questions or decks, import more from a spreadsheet (**📥 Import**, using `#` / `Question` / `Answer` columns), or delete what you don't need. All changes stay on your device only.
+You can use the web app to add any other items that you're studying.  You can add these items manually or use the import feature.  Use a CSV file that has 3 columns: **#**, **Question**, and **Answer**.  All changes stay on your device only.
 
 ## Backing up and moving between devices
 
 Use the **Backup** section on the home screen:
 
-1. **⬆️ Export** — downloads a single backup file with all questions and your complete progress.
-2. Send the file to your other device (AirDrop, email, etc.).
-3. **⬇️ Restore** — open the app there and pick the backup file. The app shows what will be replaced and asks for confirmation.
-
-This is also the way to hand your marked-up deck set to someone else, if you ever want to.
+1. **⬆️ Export** — Downloads a single backup file with all questions and your complete progress.
+2. Send the file to your other device (AirDrop, email, cloud storage, etc.).
+3. **⬇️ Restore** — Open the app there and pick the backup file. The app shows what will be replaced and asks for confirmation.
 
 ## Privacy
 
-The app is a single HTML file with no backend. Your marks, test results, and edits are stored only in your browser and are never uploaded anywhere. The only network requests are for the reading font and the Excel-import library (public CDNs); apart from first-time Excel import, the app works offline once loaded.
+The app is a single HTML file with no backend. Your marks, test results, and edits are stored only in your browser and are never uploaded anywhere. The only network requests are for the reading font and the Excel-import library.  Apart from first-time Excel import, the app works offline once loaded.
