@@ -151,7 +151,7 @@
   .chip.np{background:var(--amber-soft);color:var(--amber)}
   .modechip.np{background:var(--amber-soft);color:var(--amber)}
   .seg{display:flex;background:#e9ebf3;border-radius:13px;padding:4px;gap:4px;margin-bottom:10px}
-  .seg button{flex:1;border:none;background:none;font:inherit;font-weight:700;font-size:14px;padding:10px 6px;border-radius:10px;color:var(--muted);cursor:pointer}
+  .seg button{flex:1;border:none;background:none;font:inherit;font-weight:700;font-size:12.5px;line-height:1.25;padding:8px 4px;border-radius:10px;color:var(--muted);cursor:pointer}
   .seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
   .seg button.npseg.on{color:var(--amber)}
   .seg button.dis{opacity:.45}
@@ -266,6 +266,12 @@ let filterByDeck = {};                       // deckId -> "all" | "np" (session-
 
 function deckFilter(did){ return filterByDeck[did] || "all"; }
 function setFilter(did, f){ filterByDeck[did] = f; render(); }
+function filterPred(filter){
+  if (filter === "np") return c => c.needsPractice;
+  if (filter === "notmem") return c => !c.memorized;
+  return () => true;
+}
+const FILTER_NAMES = { all:"All", notmem:"Not Memorized", np:"Needs Practice" };
 
 function go(r){
   route = r; selMode = false; selSet.clear();
@@ -336,6 +342,7 @@ function render(){
   if (route.view === "home") app.innerHTML = vHome();
   else if (route.view === "folder") app.innerHTML = vFolder();
   else if (route.view === "deck") app.innerHTML = vDeck();
+  else if (route.view === "editList") app.innerHTML = vEditList();
   else if (route.view === "study") app.innerHTML = vStudy();
   else if (route.view === "summary") app.innerHTML = vSummary();
   else if (route.view === "deckSummary") app.innerHTML = vDeckSummary();
@@ -517,10 +524,80 @@ function vDeck(){
   if (!d) return vFolder();
   const s = deckStats(d);
   if (!s.np && deckFilter(d.id) === "np") filterByDeck[d.id] = "all";
+  if (!s.notMem && deckFilter(d.id) === "notmem") filterByDeck[d.id] = "all";
   const rows = d.cards.map(c => {
     const chips = [];
     if (c.memorized) chips.push(`<span class="chip mem">✓ Memorized</span>`);
-    if (c.needsPractice) chips.push(`<span class="chip np">⚠ Needs practice</span>`);
+    if (c.needsPractice) chips.push(`<span class="chip np">⚠ Needs Practice</span>`);
+    if (c.test === "right") chips.push(`<span class="chip right">Test: right</span>`);
+    if (c.test === "wrong") chips.push(`<span class="chip wrong">Test: wrong</span>`);
+    return `
+    <div class="row qrow" onclick="practiceFrom('${c.id}')" role="button">
+      <div class="qnum">${esc(c.num)}</div>
+      <div class="qtext">
+        <div class="qq">${esc(c.q)}</div>
+        <div class="qa">${esc(c.a)}</div>
+        ${chips.length?`<div class="chips">${chips.join("")}</div>`:""}
+      </div>
+    </div>`;}).join("");
+
+  return `
+    <div class="hdr">
+      <button class="iconbtn backbtn" onclick="go({view:'folder',fid:'${f.id}'})" aria-label="Back">‹</button>
+      <h1>${esc(d.name)}<span class="sub">${esc(f.name)} · ${s.total} questions</span></h1>
+    </div>
+    <div class="content">
+      ${d.cards.length ? `
+        <div class="section-title">Study</div>
+        <div class="seg">
+          <button class="${deckFilter(d.id)==="all"?"on":""}" onclick="setFilter('${d.id}','all')">All (${s.total})</button>
+          <button class="${deckFilter(d.id)==="notmem"?"on":""} ${s.notMem?"":"dis"}"
+            onclick="${s.notMem ? `setFilter('${d.id}','notmem')` : ""}">Not Memorized (${s.notMem})</button>
+          <button class="npseg ${deckFilter(d.id)==="np"?"on":""} ${s.np?"":"dis"}"
+            onclick="${s.np ? `setFilter('${d.id}','np')` : ""}">⚠ Needs Practice (${s.np})</button>
+        </div>
+        <div class="rowlist">
+          <button class="row" onclick="startStudy('practice')">
+            <div class="emoji">👁</div><div class="rmain"><div class="rtitle">Practice</div>
+            <div class="rsub">Flip to see the answer, mark Complete</div></div><span class="chev">›</span>
+          </button>
+          <button class="row" onclick="startStudy('blank')">
+            <div class="emoji">✏️</div><div class="rmain"><div class="rtitle">Fill In The Blank</div>
+            <div class="rsub">First 4 words shown, recall the rest</div></div><span class="chev">›</span>
+          </button>
+          <button class="row" onclick="startStudy('test')">
+            <div class="emoji">🎯</div><div class="rmain"><div class="rtitle">Test</div>
+            <div class="rsub">Answer hidden — grade yourself right or wrong</div></div><span class="chev">›</span>
+          </button>
+          <button class="row" onclick="go({view:'editList',fid:'${f.id}',did:'${d.id}'})">
+            <div class="emoji">📝</div><div class="rmain"><div class="rtitle">Edit</div>
+            <div class="rsub">Edit, add, or delete questions</div></div><span class="chev">›</span>
+          </button>
+          <button class="row" onclick="go({view:'deckSummary',fid:'${f.id}',did:'${d.id}',from:'deck'})">
+            <div class="emoji">📊</div><div class="rmain"><div class="rtitle">Deck Summary</div>
+            <div class="rsub">${s.mem} memorized · ${s.right} right · ${s.wrong} wrong</div></div><span class="chev">›</span>
+          </button>
+        </div>` : ""}
+      <div class="section-title">Questions</div>
+      ${d.cards.length ? `
+      <p style="color:var(--muted);font-size:13.5px;margin:0 4px 10px">Tap a question to practice it right away.</p>
+      <div class="rowlist">${rows}</div>` :
+        `<div class="empty"><span class="big">📥</span>No questions yet.<br>Import a spreadsheet or add one manually.</div>`}
+      <div class="btnrow" style="margin-top:14px">
+        <button class="btn soft" onclick="openImport()">📥 Import</button>
+        <button class="btn ghost" onclick="openAddCard()">＋ Add Question</button>
+      </div>
+    </div>`;
+}
+
+/* ---- edit questions view ---- */
+function vEditList(){
+  const f = folderById(route.fid), d = deckById(route.fid, route.did);
+  if (!d) return vDeck();
+  const rows = d.cards.map(c => {
+    const chips = [];
+    if (c.memorized) chips.push(`<span class="chip mem">✓ Memorized</span>`);
+    if (c.needsPractice) chips.push(`<span class="chip np">⚠ Needs Practice</span>`);
     if (c.test === "right") chips.push(`<span class="chip right">Test: right</span>`);
     if (c.test === "wrong") chips.push(`<span class="chip wrong">Test: wrong</span>`);
     const selBox = selMode
@@ -536,41 +613,16 @@ function vDeck(){
         ${chips.length?`<div class="chips">${chips.join("")}</div>`:""}
       </div>
     </div>`;}).join("");
-
   return `
     <div class="hdr">
-      <button class="iconbtn backbtn" onclick="go({view:'folder',fid:'${f.id}'})" aria-label="Back">‹</button>
-      <h1>${esc(d.name)}<span class="sub">${esc(f.name)} · ${s.total} questions</span></h1>
+      <button class="iconbtn backbtn" onclick="go({view:'deck',fid:'${f.id}',did:'${d.id}'})" aria-label="Back">‹</button>
+      <h1>📝 Edit<span class="sub">${esc(d.name)} · ${d.cards.length} questions</span></h1>
       ${d.cards.length ? `<button class="iconbtn" onclick="toggleSelMode()">${selMode?"Done":"Select"}</button>` : ""}
     </div>
     <div class="content">
       ${d.cards.length ? `
-        <div class="section-title">Study</div>
-        <div class="seg">
-          <button class="${deckFilter(d.id)==="all"?"on":""}" onclick="setFilter('${d.id}','all')">All (${s.total})</button>
-          <button class="npseg ${deckFilter(d.id)==="np"?"on":""} ${s.np?"":"dis"}"
-            onclick="${s.np ? `setFilter('${d.id}','np')` : ""}">⚠ Needs practice (${s.np})</button>
-        </div>
-        <div class="rowlist">
-          <button class="row" onclick="startStudy('practice')">
-            <div class="emoji">👁</div><div class="rmain"><div class="rtitle">Practice</div>
-            <div class="rsub">Flip to see the answer, mark Complete</div></div><span class="chev">›</span>
-          </button>
-          <button class="row" onclick="startStudy('blank')">
-            <div class="emoji">✏️</div><div class="rmain"><div class="rtitle">Fill In The Blank</div>
-            <div class="rsub">First 4 words shown, recall the rest</div></div><span class="chev">›</span>
-          </button>
-          <button class="row" onclick="startStudy('test')">
-            <div class="emoji">🎯</div><div class="rmain"><div class="rtitle">Test</div>
-            <div class="rsub">Answer hidden — grade yourself right or wrong</div></div><span class="chev">›</span>
-          </button>
-          <button class="row" onclick="go({view:'deckSummary',fid:'${f.id}',did:'${d.id}',from:'deck'})">
-            <div class="emoji">📊</div><div class="rmain"><div class="rtitle">Deck Summary</div>
-            <div class="rsub">${s.mem} memorized · ${s.right} right · ${s.wrong} wrong</div></div><span class="chev">›</span>
-          </button>
-        </div>` : ""}
-      <div class="section-title">Questions</div>
-      ${d.cards.length ? `<div class="rowlist">${rows}</div>` :
+      <p style="color:var(--muted);font-size:13.5px;margin:0 4px 10px">Tap a question to edit it, or tap Select to delete several at once.</p>
+      <div class="rowlist">${rows}</div>` :
         `<div class="empty"><span class="big">📥</span>No questions yet.<br>Import a spreadsheet or add one manually.</div>`}
       <div class="btnrow" style="margin-top:14px">
         <button class="btn soft" onclick="openImport()">📥 Import</button>
@@ -798,9 +850,19 @@ function startStudy(mode){
   const d = deckById(route.fid, route.did);
   if (!d || !d.cards.length) return;
   const filter = deckFilter(d.id);
-  const ids = d.cards.filter(c => filter === "np" ? c.needsPractice : true).map(c => c.id);
+  const ids = d.cards.filter(filterPred(filter)).map(c => c.id);
   if (!ids.length) return;
   study = { fid:route.fid, did:route.did, mode, ids, filter, i:0, flipped:false, reveal:false, done:false };
+  go({ view:"study", fid:route.fid, did:route.did });
+}
+function practiceFrom(cid){
+  const d = deckById(route.fid, route.did);
+  if (!d) return;
+  let filter = deckFilter(d.id);
+  let ids = d.cards.filter(filterPred(filter)).map(c => c.id);
+  if (!ids.includes(cid)){ filter = "all"; ids = d.cards.map(c => c.id); }
+  study = { fid:route.fid, did:route.did, mode:"practice", ids, filter,
+            i: ids.indexOf(cid), flipped:false, reveal:false, done:false };
   go({ view:"study", fid:route.fid, did:route.did });
 }
 function curCard(){
@@ -817,8 +879,8 @@ function nextCard(){
   render();
 }
 function prevCard(){
-  if (study.i === 0) return;
-  study.i--; study.flipped = false; study.reveal = false; render();
+  study.i = (study.i - 1 + study.ids.length) % study.ids.length;
+  study.flipped = false; study.reveal = false; render();
 }
 function restartStudy(){ study.i = 0; study.flipped = false; study.reveal = false; study.done = false; render(); }
 function toggleComplete(){
@@ -847,11 +909,12 @@ function vStudy(){
   const d = deckById(study.fid, study.did);
   if (!d || !study.ids.length){ study = null; return vDeck(); }
   const npFilter = study.filter === "np";
+  const filtered = study.filter !== "all";
   const hdr = `
     <div class="hdr">
       <button class="iconbtn backbtn" onclick="exitStudy()" aria-label="Exit">‹</button>
-      <h1>${esc(d.name)}<span class="sub">${MODE_NAMES[study.mode]}${npFilter ? " · Needs practice only" : ""}</span></h1>
-      <span class="modechip${npFilter ? " np" : ""}">${npFilter ? "⚠ Needs practice" : MODE_NAMES[study.mode]}</span>
+      <h1>${esc(d.name)}<span class="sub">${MODE_NAMES[study.mode]}${filtered ? ` · ${FILTER_NAMES[study.filter]} only` : ""}</span></h1>
+      <span class="modechip${npFilter ? " np" : ""}">${npFilter ? "⚠ " : ""}${filtered ? FILTER_NAMES[study.filter] : MODE_NAMES[study.mode]}</span>
     </div>`;
 
   if (study.done){
@@ -859,7 +922,7 @@ function vStudy(){
     const line = (study.mode === "test"
       ? `${s.right} right · ${s.wrong} wrong · ${s.untested} unanswered`
       : `${s.mem} of ${s.total} marked Complete`)
-      + (npFilter ? ` · studied ${study.ids.length} needing practice` : "");
+      + (filtered ? ` · studied ${study.ids.length} (${FILTER_NAMES[study.filter].toLowerCase()})` : "");
     return `${hdr}
       <div class="content"><div class="doneScreen fadein">
         <span class="big">🎉</span>
@@ -942,7 +1005,7 @@ function vStudy(){
       <div class="studyctl">
         ${controls}
         <div class="navrow">
-          <button class="navbtn" onclick="prevCard()" ${study.i===0?"disabled":""} aria-label="Previous">‹</button>
+          <button class="navbtn" onclick="prevCard()" aria-label="Previous">‹</button>
           ${study.flipped ? "" : `<div style="flex:1"></div>`}
           ${study.flipped ? `<button class="btn plain" onclick="nextCard()">Next ›</button>` : ""}
           ${study.flipped ? "" : `<button class="navbtn" onclick="nextCard()" aria-label="Next">›</button>`}
@@ -1052,7 +1115,7 @@ function vDeckSummary(){
       <div class="section-title">Not memorized yet</div>
       ${list(notMem, () => `<span class="chip pend">Still learning</span>`, "Everything is memorized. 🎉")}
       <div class="section-title">⚠ Needs practice</div>
-      ${list(d.cards.filter(c => c.needsPractice), () => `<span class="chip np">⚠ Needs practice</span>`, "Nothing is marked as needing practice.")}
+      ${list(d.cards.filter(c => c.needsPractice), () => `<span class="chip np">⚠ Needs Practice</span>`, "Nothing is marked as needing practice.")}
 
       <div class="section-title" style="margin-top:26px">🎯 Test results</div>
       <div class="sumbar">
