@@ -139,12 +139,15 @@
     box-shadow:var(--shadow);font-size:22px;color:var(--ink);cursor:pointer;
   }
   .navbtn:disabled{opacity:.35}
-  .navrow .btn{flex:1}
+  .navrow .navbtn{flex:1}
 
   .completebtn{background:var(--card);color:var(--green);border:1.5px solid var(--green);box-shadow:none}
   .completebtn.on{background:var(--green);color:#fff;border-color:var(--green)}
   .npbtn{background:var(--card);color:var(--amber);border:1.5px solid #ecd7ae;box-shadow:none;font-size:15px}
   .npbtn.on{background:var(--amber-soft);border-color:var(--amber)}
+  .ctlpair{display:flex;gap:10px}
+  .ctlpair .btn{flex:1;min-width:0;height:58px;padding:4px 10px}
+  .ctlpair .npbtn{font-size:13.5px;line-height:1.2}
   .chip.np{background:var(--amber-soft);color:var(--amber)}
   .modechip.np{background:var(--amber-soft);color:var(--amber)}
   .seg{display:flex;background:#e9ebf3;border-radius:13px;padding:4px;gap:4px;margin-bottom:10px}
@@ -1046,12 +1049,14 @@ function vStudy(){
   let ansCard = "", controls = "";
   const completeBtn = `
     <button class="btn completebtn ${c.memorized?"on":""}" onclick="toggleComplete()">
-      ${c.memorized ? "✓ Completed — tap to unmark" : "Mark as Complete"}
+      ${c.memorized ? "✓ Completed" : "Mark as Complete"}
     </button>`;
   const npBtn = `
     <button class="btn npbtn ${c.needsPractice?"on":""}" onclick="toggleNP()">
       ${c.needsPractice ? "⚠ Needs practice — tap to clear" : "Not 100% confident — needs practice"}
     </button>`;
+  // Practice / Fill In The Blank: Needs Practice appears beside Complete once it's marked
+  const markCtl = c.memorized ? `<div class="ctlpair">${completeBtn}${npBtn}</div>` : completeBtn;
 
   // Tapping the cards does all the flipping and revealing, so there are no
   // separate Flip / Show buttons (keeps the screen short on small phones).
@@ -1059,7 +1064,7 @@ function vStudy(){
     // question only
   } else if (study.mode === "practice"){
     ansCard = `<div class="fcard ans fadein tappable" onclick="toggleFlip()"><div class="flabel">Answer · tap to hide</div><div class="fanswer">${esc(c.a)}</div></div>`;
-    controls = completeBtn + (c.memorized ? npBtn : "");
+    controls = markCtl;
   } else if (study.mode === "blank"){
     const words = c.a.split(/\s+/).filter(Boolean);
     const first = words.slice(0,4), rest = words.slice(4);
@@ -1071,7 +1076,7 @@ function vStudy(){
         <div class="fanswer">${esc(first.join(" "))}${rest.length ? " " + restHtml : ""}</div>
         ${rest.length === 0 ? `<div class="hint" style="color:var(--muted);font-size:13.5px">This answer has 4 words or fewer, so it’s fully shown.</div>` : ""}
       </div>`;
-    controls = completeBtn + (c.memorized ? npBtn : "");
+    controls = markCtl;
   } else { // test
     ansCard = `<div class="fcard ans fadein tappable" onclick="toggleFlip()"><div class="flabel">Answer · tap to hide</div><div class="fanswer">${esc(c.a)}</div></div>`;
     controls = `
@@ -1097,9 +1102,7 @@ function vStudy(){
         ${controls}
         <div class="navrow">
           <button class="navbtn" onclick="prevCard()" aria-label="Previous">‹</button>
-          ${study.flipped ? "" : `<div style="flex:1"></div>`}
-          ${study.flipped ? `<button class="btn plain" onclick="nextCard()">Next ›</button>` : ""}
-          ${study.flipped ? "" : `<button class="navbtn" onclick="nextCard()" aria-label="Next">›</button>`}
+          <button class="navbtn" onclick="nextCard()" aria-label="Next">›</button>
         </div>
       </div>
     </div>`;
