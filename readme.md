@@ -30,7 +30,7 @@ Each folder contains the same 50 questions, but in its respective language. Pick
 
 ## Studying
 
-Open a folder, then a deck, and pick a mode — or tap any question in the deck's list to jump straight into practicing that card. In every mode, tap the **question card** to show the answer, and tap again to hide it. Use **‹ ›** to move between cards; tapping **‹** on the first card loops around to the last card in the deck.
+Open a folder, then a deck, and pick a mode — or tap any question in the deck's list to jump straight into practicing that card. In every mode, tap the **question card** to show the answer, and tap again to hide it. The progress bar stays at the top of the screen, and all the buttons sit in one row at the bottom, within thumb reach. Only the question and answer scroll, so long answers never push the buttons out of view. Use **‹ ›** at either end of that row to move between cards; tapping **‹** on the first card loops around to the last card in the deck.
 
 **Choose what to study:** the filter tabs at the top of each deck's Study section — **All**, **Not Memorized**, and **⚠ Needs Practice** (with counts in parentheses) — control which cards are included in whichever mode you start next. Use **Not Memorized** to work on cards you haven't marked Complete yet, or **⚠ Needs Practice** to drill only the cards you've flagged.
 
@@ -41,10 +41,10 @@ Tap the question to see the full answer. If you've got it down, tap **Mark as Co
 Tap the question to see the **first 4 words** of the answer with the rest blanked out. Tap the answer card to reveal the rest; tap again to hide it. Mark cards Complete the same way as Practice.
 
 ### 🎯 Test
-Test covers only the cards you've marked **Complete**, in a **random order** (reshuffled each time you start or tap Start Over). The Test option shows how many memorized cards it will ask; with the **⚠ Needs Practice** filter it tests just your flagged memorized cards. Recall the answer, then tap the question to check yourself. Grade yourself with the green ✓ (**Right**) or red ✗ (**Wrong**) button; the app records the result and moves on. Tapping the same grade again clears it.
+Test covers only the cards you've marked **Complete**, in a **random order** (reshuffled each time you start or tap Start Over). The Test option shows how many memorized cards it will ask; with the **⚠ Needs Practice** filter it tests just your flagged memorized cards. Recall the answer, then tap the question to check yourself. Grade yourself with the green ✓ **Right** or red ✗ **Wrong** button (they become active once the answer is showing); the app records the result and moves on. Tapping the same grade again clears it.
 
 ### ⚠ Needs Practice
-Know a card but not 100% confident? Tap **"Not 100% confident — needs practice"** (under the Complete button, or under Right/Wrong in Test mode). Flagged cards can then be drilled on their own using the **⚠ Needs Practice** filter tab described above.
+Know a card but not 100% confident? Tap **Not 100% confident** in the bottom row (it appears beside Completed once a card is marked, and is always there in Test mode). It changes to **⚠ Needs practice**; tap again to clear it. Flagged cards can then be drilled on their own using the **⚠ Needs Practice** filter tab described above.
 
 ## 📊 Summary
 
