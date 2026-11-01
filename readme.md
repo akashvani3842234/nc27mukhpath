@@ -41,7 +41,7 @@ Tap the question to see the full answer. If you've got it down, tap **Mark as Co
 Tap the question to see the **first 4 words** of the answer with the rest blanked out. Tap the answer card to reveal the rest; tap again to hide it. Mark cards Complete the same way as Practice.
 
 ### 🎯 Test
-Questions come in a **random order** (reshuffled each time you start or tap Start Over). Recall the answer, then tap the question to check yourself. Grade yourself with the green ✓ (**Right**) or red ✗ (**Wrong**) button; the app records the result and moves on. Tapping the same grade again clears it.
+Test covers only the cards you've marked **Complete**, in a **random order** (reshuffled each time you start or tap Start Over). The Test option shows how many memorized cards it will ask; with the **⚠ Needs Practice** filter it tests just your flagged memorized cards. Recall the answer, then tap the question to check yourself. Grade yourself with the green ✓ (**Right**) or red ✗ (**Wrong**) button; the app records the result and moves on. Tapping the same grade again clears it.
 
 ### ⚠ Needs Practice
 Know a card but not 100% confident? Tap **"Not 100% confident — needs practice"** (under the Complete button, or under Right/Wrong in Test mode). Flagged cards can then be drilled on their own using the **⚠ Needs Practice** filter tab described above.
