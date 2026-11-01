@@ -589,6 +589,7 @@ function vDeck(){
   const s = deckStats(d);
   if (!s.np && deckFilter(d.id) === "np") filterByDeck[d.id] = "all";
   if (!s.notMem && deckFilter(d.id) === "notmem") filterByDeck[d.id] = "all";
+  const nTest = d.cards.filter(filterPred(deckFilter(d.id))).filter(c => c.memorized).length;
   const rows = d.cards.map(c => {
     const chips = [];
     if (c.memorized) chips.push(`<span class="chip mem">✓ Memorized</span>`);
@@ -629,9 +630,11 @@ function vDeck(){
             <div class="emoji">✏️</div><div class="rmain"><div class="rtitle">Fill In The Blank</div>
             <div class="rsub">First 4 words shown, recall the rest</div></div><span class="chev">›</span>
           </button>
-          <button class="row" onclick="startStudy('test')">
+          <button class="row" ${nTest ? `onclick="startStudy('test')"` : `style="opacity:.5;cursor:default"`}>
             <div class="emoji">🎯</div><div class="rmain"><div class="rtitle">Test</div>
-            <div class="rsub">Random order — grade yourself right or wrong</div></div><span class="chev">›</span>
+            <div class="rsub">${nTest
+              ? `${nTest} memorized ${nTest === 1 ? "card" : "cards"} in random order — grade yourself`
+              : (deckFilter(d.id) === "notmem" ? "Test covers memorized cards only" : "Mark cards Complete to test them")}</div></div><span class="chev">›</span>
           </button>
           <button class="row" onclick="go({view:'editList',fid:'${f.id}',did:'${d.id}'})">
             <div class="emoji">📝</div><div class="rmain"><div class="rtitle">Edit</div>
@@ -935,7 +938,9 @@ function startStudy(mode){
   const d = deckById(route.fid, route.did);
   if (!d || !d.cards.length) return;
   const filter = deckFilter(d.id);
-  let ids = d.cards.filter(filterPred(filter)).map(c => c.id);
+  let ids = d.cards.filter(filterPred(filter))
+    .filter(c => mode !== "test" || c.memorized)  // Test only covers cards marked Complete
+    .map(c => c.id);
   if (!ids.length) return;
   if (mode === "test") ids = shuffle(ids);     // Test asks in a random order
   study = { fid:route.fid, did:route.did, mode, ids, filter, i:0, flipped:false, reveal:false, done:false };
@@ -1016,10 +1021,12 @@ function vStudy(){
 
   if (study.done){
     const s = deckStats(d);
+    const tested = d.cards.filter(c => study.ids.includes(c.id));
+    const nRight = tested.filter(c => c.test === "right").length, nWrong = tested.filter(c => c.test === "wrong").length;
     const line = (study.mode === "test"
-      ? `${s.right} right · ${s.wrong} wrong · ${s.untested} unanswered`
+      ? `${tested.length} memorized cards: ${nRight} right · ${nWrong} wrong · ${tested.length - nRight - nWrong} unanswered`
       : `${s.mem} of ${s.total} marked Complete`)
-      + (filtered ? ` · studied ${study.ids.length} (${FILTER_NAMES[study.filter].toLowerCase()})` : "");
+      + (filtered && study.mode !== "test" ? ` · studied ${study.ids.length} (${FILTER_NAMES[study.filter].toLowerCase()})` : "");
     return `${hdr}
       <div class="content"><div class="doneScreen fadein">
         <span class="big">🎉</span>
